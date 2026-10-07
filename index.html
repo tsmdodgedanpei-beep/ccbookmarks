@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CCBookmarks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+/* CCBookmarks styles */
+* {
+  box-sizing: border-box;
+}
+
+/* The `hidden` attribute must always win, otherwise elements that set a
+   `display` value in CSS (e.g. .modal-backdrop) can never be hidden. */
+[hidden] {
+  display: none !important;
+}
+
+:root {
+  --bg: #0f1026;
+  --panel: #1a1d33;
+  --surface: #1f2342;
+  --text: #f4f4f8;
+  --text-muted: #bfc1d6;
+  --border: #2d315c;
+  --primary: #7c8cff;
+  --primary-hover: #8f9bff;
+  --danger: #f87171;
+  --danger-hover: #f98282;
+  --secondary: #3a3f6b;
+  --secondary-hover: #454a7a;
+  --accent: #22d3ee;
+  --success: #34d399;
+  --shadow: 0 10px 30px rgba(15, 16, 38, 0.6);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: radial-gradient(1200px 800px at 80% -10%, rgba(124, 140, 255, 0.18), transparent),
+    radial-gradient(900px 700px at 20% 110%, rgba(34, 211, 238, 0.14), transparent),
+    var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(26, 29, 51, 0.92);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: var(--shadow);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.brand svg {
+  color: var(--primary);
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  background: var(--secondary);
+  color: var(--text);
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: var(--secondary-hover);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, rgba(124, 140, 255, 0.95), rgba(34, 211, 238, 0.9));
+  color: var(--bg);
+  font-weight: 600;
+  box-shadow: 0 6px 24px rgba(124, 140, 255, 0.28);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+}
+
+.btn-danger {
+  background: rgba(248, 113, 113, 0.25);
+  border-color: rgba(248, 113, 113, 0.6);
+  color: var(--text);
+}
+
+.btn-danger:hover {
+  background: rgba(248, 113, 113, 0.38);
+}
+
+/* Layout */
+.app-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  min-height: calc(100vh - 70px);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  background: rgba(26, 29, 51, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.6rem 0.9rem;
+  box-shadow: var(--shadow);
+}
+
+.search-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(31, 35, 66, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  flex: 1 1 280px;
+  max-width: 560px;
+}
+
+.search-group svg {
+  color: var(--text-muted);
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  font-size: 0.98rem;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.select {
+  background: rgba(31, 35, 66, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.95rem;
+}
+
+.split-view {
+  display: grid;
+  grid-template-columns: minmax(320px, 380px) 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.bookmark-list-pane,
+.viewer-pane {
+  background: rgba(26, 29, 51, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 560px;
+  max-height: calc(100vh - 190px);
+}
+
+.bookmark-list {
+  flex: 1;
+  overflow: auto;
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bookmark-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(31, 35, 66, 0.85);
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.bookmark-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(124, 140, 255, 0.8);
+}
+
+.bookmark-card.active {
+  border-color: rgba(34, 211, 238, 0.9);
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.16) 0%, rgba(31, 35, 66, 0.95) 100%);
+  box-shadow: 0 8px 24px rgba(34, 211, 238, 0.16);
+}
+
+.bookmark-card-title {
+  font-weight: 600;
+  font-size: 0.98rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookmark-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(26, 29, 51, 0.9);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.bookmark-card-url {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookmark-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.tag-dot {
+  font-size: 0.78rem;
+  color: var(--accent);
+}
+
+.empty-state {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-state p {
+  margin: 0.4rem 0;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.viewer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(31, 35, 66, 0.9);
+}
+
+.viewer-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.viewer-title-group h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viewer-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.viewer-link:hover {
+  text-decoration: underline;
+}
+
+.viewer-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.viewer-body {
+  flex: 1;
+  position: relative;
+  min-height: 520px;
+}
+
+.viewer-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-muted);
+  padding: 1rem;
+  gap: 0.6rem;
+}
+
+.viewer-placeholder svg {
+  color: var(--primary);
+  opacity: 0.8;
+}
+
+.page-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+
+.frame-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+  background: linear-gradient(180deg, rgba(31, 35, 66, 0.98) 0%, rgba(26, 29, 51, 0.98) 100%);
+  color: var(--text);
+}
+
+.error-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(1200px 800px at 50% 10%, rgba(124, 140, 255, 0.24), transparent),
+    rgba(15, 16, 38, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem;
+  z-index: 50;
+}
+
+.modal {
+  width: min(680px, 100%);
+  background: linear-gradient(180deg, rgba(124, 140, 255, 0.16) 0%, rgba(26, 29, 51, 0.98) 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.icon-btn {
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  color: var(--text);
+}
+
+#bookmarkForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.2rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+label {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.required {
+  color: var(--danger);
+}
+
+input[type="text"],
+input[type="url"],
+textarea,
+.select {
+  background: rgba(31, 35, 66, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 0.55rem 0.7rem;
+  font-size: 0.98rem;
+  font-family: inherit;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-help {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding-top: 0.4rem;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%);
+  background: rgba(26, 29, 51, 0.98);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.7rem 1.2rem;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  z-index: 60;
+  font-size: 0.95rem;
+}
+
+.toast.error {
+  border-color: rgba(248, 113, 113, 0.8);
+  color: var(--danger);
+}
+
+.toast.success {
+  border-color: rgba(52, 211, 153, 0.8);
+  color: var(--success);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .app-main {
+    grid-template-columns: 1fr;
+  }
+
+  .split-view {
+    grid-template-columns: 340px 1fr;
+  }
+}
+
+@media (max-width: 1080px) {
+  .split-view {
+    grid-template-columns: 1fr;
+  }
+
+  .bookmark-list-pane,
+  .viewer-pane {
+    max-height: none;
+    min-height: 420px;
+  }
+
+  .viewer-body {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 860px) {
+  .app-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+</style>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+        </svg>
+        <h1>CCBookmarks</h1>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="addBookmarkBtn" class="btn btn-primary">Add Bookmark</button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <section class="content">
+        <div class="toolbar">
+          <div class="search-group">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by title, URL, notes, tags, category..." />
+          </div>
+          <div class="filter-group">
+            <label for="sortSelect" class="sr-only">Sort</label>
+            <select id="sortSelect" class="select">
+              <option value="title-asc">Title A-Z</option>
+              <option value="title-desc">Title Z-A</option>
+              <option value="added-desc">Recently Added</option>
+              <option value="updated-desc">Recently Updated</option>
+              <option value="added-asc">Oldest Added</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="split-view">
+          <div class="bookmark-list-pane">
+            <div id="bookmarkList" class="bookmark-list"></div>
+            <div id="emptyState" class="empty-state" hidden>
+              <p>No bookmarks found.</p>
+              <p id="emptyHint" class="muted">Add one to get started.</p>
+            </div>
+          </div>
+          <div class="viewer-pane">
+            <div id="viewerHeader" class="viewer-header" hidden>
+              <div class="viewer-title-group">
+                <h2 id="viewerTitle">Page</h2>
+                <a id="viewerLink" href="#" target="_blank" rel="noopener noreferrer" class="viewer-link">Open in browser ↗</a>
+              </div>
+              <div class="viewer-actions">
+                <button type="button" id="editBookmarkBtn" class="btn btn-secondary">Edit</button>
+                <button type="button" id="deleteBookmarkBtn" class="btn btn-danger">Delete</button>
+              </div>
+            </div>
+            <div id="viewerBody" class="viewer-body">
+              <div id="viewerPlaceholder" class="viewer-placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+                </svg>
+                <p>Select a bookmark to view it here.</p>
+                <p class="muted">Some sites block iframe embedding; if it doesn't load, open in your browser.</p>
+              </div>
+              <iframe id="pageFrame" class="page-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer-when-downgrade" hidden></iframe>
+              <div id="frameError" class="frame-error" hidden>
+                <p>This page may be blocking iframe embedding.</p>
+                <div class="error-actions">
+                  <a id="errorOpenBrowser" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Open in browser</a>
+                  <button type="button" id="retryFrameBtn" class="btn btn-secondary">Retry</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal: Add/Edit Bookmark -->
+    <div id="modalBackdrop" class="modal-backdrop" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-header">
+          <h2 id="modalTitle">Add Bookmark</h2>
+          <button type="button" id="closeModalBtn" class="icon-btn" aria-label="Close">✕</button>
+        </div>
+        <form id="bookmarkForm" novalidate>
+          <div class="form-row">
+            <label for="formUrl">URL <span class="required">*</span></label>
+            <input type="url" id="formUrl" name="url" placeholder="https://example.com" required />
+            <p class="form-help">Paste the full URL starting with https://</p>
+          </div>
+          <div class="form-row">
+            <label for="formTitle">Title</label>
+            <input type="text" id="formTitle" name="title" placeholder="Leave empty to use page title or URL" />
+          </div>
+          <div class="form-row form-row-2">
+            <div class="form-col">
+              <label for="formCategory">Category <span class="muted">(free text)</span></label>
+              <input type="text" id="formCategory" name="category" list="categorySuggestions" placeholder="e.g. Work, Reading, Tools" />
+              <datalist id="categorySuggestions"></datalist>
+            </div>
+            <div class="form-col">
+              <label for="formTags">Tags <span class="muted">(comma separated)</span></label>
+              <input type="text" id="formTags" name="tags" placeholder="e.g. react, css, docs" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="formNotes">Notes</label>
+            <textarea id="formNotes" name="notes" rows="3" placeholder="Optional notes"></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" id="cancelModalBtn" class="btn btn-secondary">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+
+    <script>
+(function () {
+  const state = {
+    bookmarks: [],
+    selectedId: null,
+    search: '',
+    sort: 'title-asc',
+    editingId: null,
+    frameUrl: null,
+  };
+
+  // Elements
+  const searchInput = document.getElementById('searchInput');
+  const sortSelect = document.getElementById('sortSelect');
+  const bookmarkListEl = document.getElementById('bookmarkList');
+  const emptyStateEl = document.getElementById('emptyState');
+  const emptyHintEl = document.getElementById('emptyHint');
+  const viewerHeaderEl = document.getElementById('viewerHeader');
+  const viewerTitleEl = document.getElementById('viewerTitle');
+  const viewerLinkEl = document.getElementById('viewerLink');
+  const viewerPlaceholderEl = document.getElementById('viewerPlaceholder');
+  const pageFrameEl = document.getElementById('pageFrame');
+  const frameErrorEl = document.getElementById('frameError');
+  const errorOpenBrowserEl = document.getElementById('errorOpenBrowser');
+  const retryFrameBtn = document.getElementById('retryFrameBtn');
+  const editBookmarkBtn = document.getElementById('editBookmarkBtn');
+  const deleteBookmarkBtn = document.getElementById('deleteBookmarkBtn');
+  const addBookmarkBtn = document.getElementById('addBookmarkBtn');
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const cancelModalBtn = document.getElementById('cancelModalBtn');
+  const bookmarkForm = document.getElementById('bookmarkForm');
+  const formUrl = document.getElementById('formUrl');
+  const formTitle = document.getElementById('formTitle');
+  const formCategory = document.getElementById('formCategory');
+  const formTags = document.getElementById('formTags');
+  const formNotes = document.getElementById('formNotes');
+  const categorySuggestions = document.getElementById('categorySuggestions');
+  const toastEl = document.getElementById('toast');
+  const modalTitleEl = document.getElementById('modalTitle');
+
+  let toastTimeout;
+
+  function showToast(message, type = 'info') {
+    clearTimeout(toastTimeout);
+    toastEl.textContent = message;
+    toastEl.hidden = false;
+    toastEl.classList.remove('error', 'success');
+    if (type === 'error') toastEl.classList.add('error');
+    if (type === 'success') toastEl.classList.add('success');
+    toastTimeout = setTimeout(() => {
+      toastEl.hidden = true;
+    }, 2200);
+  }
+
+  const STORAGE_KEY = 'ccbookmarks:bookmarks:v1';
+  const MAX_TITLE = 500;
+  const MAX_URL = 1000;
+  const MAX_CATEGORY = 100;
+  const MAX_NOTES = 5000;
+  const MAX_TAGS = 50;
+  const MAX_TAG_LENGTH = 100;
+
+  function makeId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
+
+  function loadBookmarks() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const data = raw ? JSON.parse(raw) : [];
+      return Array.isArray(data) ? data : [];
+    } catch (err) {
+      console.error('Failed to read bookmarks from localStorage:', err);
+      return [];
+    }
+  }
+
+  function saveBookmarks(list) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    } catch (err) {
+      console.error('Failed to save bookmarks to localStorage:', err);
+      showToast('Could not save bookmarks (storage full?)', 'error');
+    }
+  }
+
+  function normalizeUrl(value) {
+    const trimmed = String(value || '').trim();
+    if (!trimmed) return null;
+    const withScheme = /^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`;
+    try {
+      const parsed = new URL(withScheme);
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+      if (!parsed.hostname) return null;
+      return parsed.href;
+    } catch {
+      return null;
+    }
+  }
+
+  function getAllCategories(bookmarks) {
+    const set = new Set();
+    bookmarks.forEach((b) => {
+      const c = (b.category || '').trim();
+      if (c) set.add(c);
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  }
+
+  function normalizeTags(str) {
+    if (!str) return [];
+    return str
+      .split(/[,\s]+/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+  }
+
+  function matchesSearch(b, q) {
+    if (!q) return true;
+    const s = q.toLowerCase();
+    const title = (b.title || '').toLowerCase();
+    const url = (b.url || '').toLowerCase();
+    const notes = (b.notes || '').toLowerCase();
+    const cat = (b.category || '').toLowerCase();
+    const tags = (b.tags || []).map((t) => t.toLowerCase()).join(' ');
+    return [title, url, notes, cat, tags].some((x) => x.includes(s));
+  }
+
+  function getFilteredBookmarks() {
+    const res = state.bookmarks.filter((b) => matchesSearch(b, state.search));
+    return sortBookmarks(res);
+  }
+
+  function renderCategories() {
+    const all = getAllCategories(state.bookmarks);
+
+    categorySuggestions.innerHTML = '';
+    all.forEach((c) => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      categorySuggestions.appendChild(opt);
+    });
+  }
+
+  function sortBookmarks(list) {
+    const arr = list.slice();
+    arr.sort((a, b) => {
+      switch (state.sort) {
+        case 'title-desc':
+          return (b.title || '').localeCompare(a.title || '', undefined, { sensitivity: 'base', numeric: true });
+        case 'added-desc':
+          return new Date(b.addedAt || 0) - new Date(a.addedAt || 0);
+        case 'updated-desc':
+          return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+        case 'added-asc':
+          return new Date(a.addedAt || 0) - new Date(b.addedAt || 0);
+        case 'title-asc':
+        default:
+          return (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base', numeric: true });
+      }
+    });
+    return arr;
+  }
+
+  function escapeHtml(str) {
+    return (str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function renderBookmarks() {
+    const list = getFilteredBookmarks();
+    bookmarkListEl.innerHTML = '';
+
+    if (list.length === 0) {
+      emptyStateEl.hidden = false;
+      emptyHintEl.textContent =
+        state.bookmarks.length === 0 ? 'Add one to get started.' : 'Try adjusting your search or filters.';
+    } else {
+      emptyStateEl.hidden = true;
+    }
+
+    list.forEach((b) => {
+      const card = document.createElement('div');
+      card.className = 'bookmark-card' + (state.selectedId === b.id ? ' active' : '');
+      const tagsHtml = (b.tags || [])
+        .slice(0, 6)
+        .map((t) => `<span class="badge"><span class="tag-dot">#</span>${escapeHtml(t)}</span>`)
+        .join('');
+
+      card.innerHTML = `
+        <div class="bookmark-card-title" title="${escapeHtml(b.title || b.url)}">${escapeHtml(b.title || b.url)}</div>
+        <div class="bookmark-card-meta">
+          ${b.category ? `<span class="badge">${escapeHtml(b.category)}</span>` : ''}
+          ${tagsHtml}
+        </div>
+        <div class="bookmark-card-url" title="${escapeHtml(b.url)}">${escapeHtml(b.url)}</div>
+      `;
+      card.addEventListener('click', () => selectBookmark(b.id));
+      bookmarkListEl.appendChild(card);
+    });
+
+    // If selection no longer in list, clear viewer
+    if (state.selectedId && !list.some((b) => b.id === state.selectedId)) {
+      clearViewer();
+    }
+  }
+
+  function getBookmark(id) {
+    return state.bookmarks.find((b) => b.id === id) || null;
+  }
+
+  function selectBookmark(id) {
+    const b = getBookmark(id);
+    if (!b) return;
+    state.selectedId = id;
+    renderBookmarks();
+    showInViewer(b);
+  }
+
+  let frameTimer = null;
+  let lastFrameLoadAt = 0;
+  const FRAME_TIMEOUT_MS = 6000;
+
+  function clearViewer() {
+    state.selectedId = null;
+    state.frameUrl = null;
+    if (frameTimer) {
+      clearTimeout(frameTimer);
+      frameTimer = null;
+    }
+    pageFrameEl.onload = null;
+    pageFrameEl.onerror = null;
+    viewerHeaderEl.hidden = true;
+    viewerPlaceholderEl.hidden = false;
+    pageFrameEl.hidden = true;
+    frameErrorEl.hidden = true;
+    pageFrameEl.src = 'about:blank';
+    renderBookmarks();
+  }
+
+  function showInViewer(b) {
+    viewerHeaderEl.hidden = false;
+    viewerTitleEl.textContent = b.title || b.url;
+    viewerTitleEl.title = b.title || b.url;
+    viewerLinkEl.href = b.url;
+    errorOpenBrowserEl.href = b.url;
+    state.frameUrl = b.url;
+    loadFrame();
+  }
+
+  function loadFrame() {
+    viewerPlaceholderEl.hidden = true;
+    frameErrorEl.hidden = true;
+    pageFrameEl.hidden = false;
+
+    if (frameTimer) {
+      clearTimeout(frameTimer);
+      frameTimer = null;
+    }
+
+    // X-Frame-Options / CSP refusals rarely fire the iframe's `error` event
+    // (the frame just stays blank), so use a generous load timeout as the
+    // fallback trigger. Each retry resets the timer and event handlers.
+    lastFrameLoadAt = 0;
+    pageFrameEl.onload = () => {
+      lastFrameLoadAt = Date.now();
+    };
+    pageFrameEl.onerror = () => {
+      handleFrameError();
+    };
+    pageFrameEl.src = state.frameUrl;
+
+    frameTimer = setTimeout(() => {
+      frameTimer = null;
+      if (!lastFrameLoadAt) handleFrameError();
+    }, FRAME_TIMEOUT_MS);
+  }
+
+  function handleFrameError() {
+    if (frameTimer) {
+      clearTimeout(frameTimer);
+      frameTimer = null;
+    }
+    pageFrameEl.onload = null;
+    pageFrameEl.onerror = null;
+    pageFrameEl.hidden = true;
+    frameErrorEl.hidden = false;
+  }
+
+  // Modal
+  function openModal(mode = 'add', bookmark = null) {
+    state.editingId = mode === 'edit' && bookmark ? bookmark.id : null;
+    modalTitleEl.textContent = mode === 'edit' ? 'Edit Bookmark' : 'Add Bookmark';
+    if (mode === 'edit' && bookmark) {
+      formUrl.value = bookmark.url || '';
+      formTitle.value = bookmark.title || '';
+      formCategory.value = bookmark.category || '';
+      formTags.value = (bookmark.tags || []).join(', ');
+      formNotes.value = bookmark.notes || '';
+    } else {
+      bookmarkForm.reset();
+      formUrl.value = '';
+    }
+    modalBackdrop.hidden = false;
+    formUrl.focus();
+  }
+
+  function closeModal() {
+    modalBackdrop.hidden = true;
+    state.editingId = null;
+    bookmarkForm.reset();
+  }
+
+  // Events
+  addBookmarkBtn.addEventListener('click', () => openModal('add'));
+  closeModalBtn.addEventListener('click', closeModal);
+  cancelModalBtn.addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', (e) => {
+    if (e.target === modalBackdrop) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modalBackdrop.hidden) closeModal();
+  });
+
+  bookmarkForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const normalized = normalizeUrl(formUrl.value);
+    if (!normalized) {
+      showToast('Enter a valid http(s) URL', 'error');
+      formUrl.focus();
+      return;
+    }
+
+    const title = formTitle.value.trim() || normalized;
+    const category = formCategory.value.trim();
+    const tags = normalizeTags(formTags.value);
+    const notes = formNotes.value.trim();
+
+    if (
+      title.length > MAX_TITLE ||
+      normalized.length > MAX_URL ||
+      category.length > MAX_CATEGORY ||
+      notes.length > MAX_NOTES ||
+      tags.length > MAX_TAGS ||
+      tags.some((t) => t.length > MAX_TAG_LENGTH)
+    ) {
+      showToast('One of the fields is too long', 'error');
+      return;
+    }
+
+    const bookmarks = loadBookmarks();
+    const dup = bookmarks.find((b) => b.url === normalized && b.id !== state.editingId);
+    if (dup) {
+      showToast('A bookmark with this URL already exists', 'error');
+      return;
+    }
+
+    const now = new Date().toISOString();
+    if (state.editingId) {
+      const idx = bookmarks.findIndex((b) => b.id === state.editingId);
+      if (idx === -1) {
+        showToast('Bookmark not found', 'error');
+        return;
+      }
+      bookmarks[idx] = { ...bookmarks[idx], url: normalized, title, category, tags, notes, updatedAt: now };
+      showToast('Bookmark updated', 'success');
+    } else {
+      bookmarks.push({
+        id: makeId(),
+        url: normalized,
+        title,
+        category,
+        tags,
+        notes,
+        addedAt: now,
+        updatedAt: now,
+      });
+      showToast('Bookmark added', 'success');
+    }
+
+    saveBookmarks(bookmarks);
+    state.bookmarks = bookmarks;
+    renderCategories();
+    renderBookmarks();
+    if (state.editingId) selectBookmark(state.editingId);
+    closeModal();
+  });
+
+  editBookmarkBtn.addEventListener('click', () => {
+    if (!state.selectedId) return;
+    const b = getBookmark(state.selectedId);
+    if (b) openModal('edit', b);
+  });
+
+  deleteBookmarkBtn.addEventListener('click', () => {
+    if (!state.selectedId) return;
+    const b = getBookmark(state.selectedId);
+    const name = b ? b.title || b.url : 'this bookmark';
+    if (!confirm(`Delete "${name}"?`)) return;
+    const bookmarks = loadBookmarks();
+    const next = bookmarks.filter((x) => x.id !== state.selectedId);
+    if (next.length === bookmarks.length) {
+      showToast('Bookmark not found', 'error');
+      return;
+    }
+    saveBookmarks(next);
+    state.bookmarks = next;
+    showToast('Bookmark deleted', 'success');
+    state.selectedId = null;
+    renderCategories();
+    renderBookmarks();
+    clearViewer();
+  });
+
+  retryFrameBtn.addEventListener('click', () => {
+    loadFrame();
+  });
+
+  searchInput.addEventListener('input', () => {
+    state.search = searchInput.value;
+    renderBookmarks();
+  });
+
+  sortSelect.addEventListener('change', () => {
+    state.sort = sortSelect.value;
+    renderBookmarks();
+  });
+
+  // Init
+  function init() {
+    state.bookmarks = loadBookmarks();
+    renderCategories();
+    renderBookmarks();
+  }
+
+  init();
+})();
+
+</script>
+  </body>
+</html>
